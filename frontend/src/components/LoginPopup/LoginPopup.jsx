@@ -30,15 +30,23 @@ const LoginPopup = ({ setShowLogin }) => {
             newUrl += "/api/user/register"
         }
 
+        try {
+            const response = await axios.post(newUrl, data);
 
-        const response = await axios.post(newUrl,data);
-
-        if(response.data.success){
-            setToken(response.data.token);
-            localStorage.setItem("token", response.data.token)
-            setShowLogin(false);
-        }else{
-            alert(response.data.message);
+            if (response.data.success) {
+                setToken(response.data.token);
+                localStorage.setItem("token", response.data.token);
+                setShowLogin(false);
+            } else {
+                alert(response.data.message);
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                alert(error.response.data.message || "Unauthorized. Invalid credentials.");
+            } else {
+                alert("Something went wrong. Please try again.");
+                console.error(error);
+            }
         }
     }
 
